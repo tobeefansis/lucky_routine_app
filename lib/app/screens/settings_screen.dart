@@ -7,7 +7,7 @@ class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   static final Uri _privacyUri = Uri.parse(
-    'https://shufflematchjokeredition.com/privacy-policy.html',
+    'https://sites.google.com/view/luckyroutineprivacy/',
   );
 
   Future<void> _openPrivacyPolicy(BuildContext context) async {
