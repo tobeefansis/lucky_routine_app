@@ -6,8 +6,9 @@ import '../theme/app_colors.dart';
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
-  static final Uri _privacyUri =
-      Uri.parse('https://luckyroutine.app/privacy-policy');
+  static final Uri _privacyUri = Uri.parse(
+    'https://shufflematchjokeredition.com/privacy-policy.html',
+  );
 
   Future<void> _openPrivacyPolicy(BuildContext context) async {
     final messenger = ScaffoldMessenger.of(context);
@@ -26,9 +27,7 @@ class SettingsScreen extends StatelessWidget {
 
   void _showError(ScaffoldMessengerState messenger) {
     messenger.showSnackBar(
-      const SnackBar(
-        content: Text('Could not open the privacy policy'),
-      ),
+      const SnackBar(content: Text('Could not open the privacy policy')),
     );
   }
 
@@ -112,7 +111,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 SelectableText(
-                  'support@luckyroutine.app',
+                  'Pak.nain55@gmail.com',
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w600,
@@ -141,12 +140,7 @@ class _SectionCard extends StatelessWidget {
         border: Border.all(color: Colors.white.withOpacity(0.6)),
         boxShadow: AppColors.softGlow,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: child,
-      ),
+      child: Padding(padding: const EdgeInsets.all(20), child: child),
     );
   }
 }
-
-
