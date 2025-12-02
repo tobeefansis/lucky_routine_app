@@ -52,7 +52,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Version 1.0.0+1',
+                  'Version 1.0.1',
                   style: TextStyle(color: AppColors.textSecondary),
                 ),
                 SizedBox(height: 12),

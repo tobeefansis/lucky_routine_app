@@ -1,0 +1,1 @@
+{"flutter":{"platforms":{"ios":{"default":{"projectId":"lucky-routine","appId":"1:79842997178:ios:c60ea9f76adcd07056e383","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"lucky-routine","configurations":{"ios":"1:79842997178:ios:c60ea9f76adcd07056e383"}}}}}}
