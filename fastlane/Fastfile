@@ -82,7 +82,7 @@ desc "Sync codesigning certificates for Build"
       targets: "NotificationsService",
       team_id: ENV["APPLE_TEAM_ID"],
       bundle_identifier: "#{ENV['IOS_BUNDLE_ID']}.notification-service",
-      profile_name: ENV["sigh_#{ENV['IOS_BUNDLE_ID']}.notifications_appstore_profile-name"],
+      profile_name: ENV["sigh_#{ENV['IOS_BUNDLE_ID']}.notification-service_appstore_profile-name"],
       code_sign_identity: "Apple Distribution"
     )
     
@@ -91,7 +91,7 @@ desc "Sync codesigning certificates for Build"
     
     # Get provisioning profile names from Match
     main_profile = ENV["sigh_#{ENV['IOS_BUNDLE_ID']}_appstore_profile-name"]
-    extension_profile = ENV["sigh_#{ENV['IOS_BUNDLE_ID']}.notifications_appstore_profile-name"]
+    extension_profile = ENV["sigh_#{ENV['IOS_BUNDLE_ID']}.notification-service_appstore_profile-name"]
     
     # Read, update and write ExportOptions.plist
     require 'plist'
