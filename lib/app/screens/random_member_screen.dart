@@ -90,8 +90,8 @@ class _RandomMemberScreenState extends State<RandomMemberScreen> {
                       Text(
                         'Who takes the next task?',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                              fontWeight: FontWeight.w700,
+                            ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 24),
@@ -155,8 +155,8 @@ class _RandomMemberScreenState extends State<RandomMemberScreen> {
                                             color: member.color.withOpacity(
                                               0.85,
                                             ),
-                                            borderColor: Colors.white
-                                                .withOpacity(0.6),
+                                            borderColor:
+                                                Colors.white.withOpacity(0.6),
                                             borderWidth: 1.5,
                                           ),
                                         ),
@@ -172,16 +172,15 @@ class _RandomMemberScreenState extends State<RandomMemberScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: FilledButton.icon(
-                          onPressed: widget.members.length < 2
-                              ? null
-                              : _spinWheel,
+                          onPressed:
+                              widget.members.length < 2 ? null : _spinWheel,
                           icon: const Icon(Icons.casino),
                           label: Text(
                             widget.members.length < 2
                                 ? 'Add more participants'
                                 : _isSpinning
-                                ? 'Picking...'
-                                : 'Pick randomly',
+                                    ? 'Picking...'
+                                    : 'Pick randomly',
                           ),
                         ),
                       ),
@@ -241,9 +240,9 @@ class _SelectedMemberCard extends StatelessWidget {
             Text(
               member.name,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.bold,
-              ),
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 4),
             Text(
