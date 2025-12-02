@@ -24,7 +24,7 @@
         <string>Lucky Routine</string>
         
         <!-- Bundle ID notification extension -->
-        <key>com.lucky.routine.notifications</key>
+        <key>com.lucky.routine.notification-service</key>
         <string>Lucky Routine Not</string>
     </dict>
 </dict>
