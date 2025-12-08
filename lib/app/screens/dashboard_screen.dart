@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../models/family_member.dart';
@@ -65,12 +67,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _WheelButton(onPressed: () => _openWheel(context)),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Text(
             'Task filter',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               color: AppColors.textSecondary,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.3,
             ),
           ),
           const SizedBox(height: 12),
@@ -80,26 +83,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: filters
                   .map(
                     (filter) => Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: ChoiceChip(
-                        label: Text(filter.label),
-                        selected: _selectedFilterId == filter.id,
-                        labelStyle: TextStyle(
-                          color: _selectedFilterId == filter.id
-                              ? AppColors.textPrimary
-                              : AppColors.textSecondary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        backgroundColor: filter.color.withOpacity(0.4),
-                        selectedColor: filter.color,
+                      padding: const EdgeInsets.only(right: 10),
+                      child: _FilterChip(
+                        filter: filter,
+                        isSelected: _selectedFilterId == filter.id,
                         onSelected: (isSelected) => setState(
                           () =>
                               _selectedFilterId = isSelected ? filter.id : null,
-                        ),
-                        shape: StadiumBorder(
-                          side: BorderSide(
-                            color: Colors.white.withOpacity(0.4),
-                          ),
                         ),
                       ),
                     ),
@@ -107,7 +97,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   .toList(),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           if (filteredTasks.isEmpty)
             EmptyTasksState(
               message: _selectedFilterId == null
@@ -119,69 +109,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
               itemBuilder: (context, index) {
                 final task = filteredTasks[index];
                 final assignee = _resolveAssignee(task.assigneeId);
-                Gradient gradient;
-                if (assignee != null) {
-                  gradient = LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      assignee.color.withOpacity(0.35),
-                      assignee.color.withOpacity(0.1),
-                      Colors.transparent,
-                    ],
-                  );
-                } else {
-                  gradient = LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      Colors.white.withOpacity(1),
-                      Colors.white.withOpacity(0.1),
-                      Colors.transparent,
-                    ],
-                  );
-                }
-                return DecoratedBox(
-                  key: ValueKey(task.id),
-                  decoration: BoxDecoration(
-                    gradient: gradient,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withOpacity(0.6)),
-                    boxShadow: AppColors.softGlow,
-                  ),
-                  child: CheckboxListTile(
-                    controlAffinity: ListTileControlAffinity.leading,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 4,
-                    ),
-                    title: Text(
-                      task.title,
-                      style: TextStyle(
-                        decoration: task.isDone
-                            ? TextDecoration.lineThrough
-                            : null,
-                        color: task.isDone
-                            ? AppColors.textSecondary
-                            : AppColors.textPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Text(
-                      assignee == null
-                          ? 'Unassigned'
-                          : '${assignee.name} · ${assignee.relation}',
-                      style: const TextStyle(color: AppColors.textSecondary),
-                    ),
-                    value: task.isDone,
-                    onChanged: (value) =>
-                        widget.onToggleTaskStatus(task.id, value ?? false),
-                    activeColor: AppColors.accentPrimary,
-                    checkboxShape: const CircleBorder(),
-                  ),
+                return _TaskCard(
+                  task: task,
+                  assignee: assignee,
+                  onToggle: (value) =>
+                      widget.onToggleTaskStatus(task.id, value ?? false),
                 );
               },
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, __) => const SizedBox(height: 14),
               itemCount: filteredTasks.length,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -211,9 +146,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _openWheel(BuildContext context) {
     if (widget.members.length < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Add more family members to spin the wheel'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: const Text('Add more family members to spin the wheel'),
+          duration: const Duration(seconds: 2),
+          backgroundColor: AppColors.accentPrimary,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       return;
@@ -222,6 +162,182 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => RandomMemberScreen(members: widget.members),
+      ),
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  const _FilterChip({
+    required this.filter,
+    required this.isSelected,
+    required this.onSelected,
+  });
+
+  final TaskFilterOption filter;
+  final bool isSelected;
+  final ValueChanged<bool> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => onSelected(!isSelected),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          gradient: isSelected
+              ? LinearGradient(
+                  colors: [
+                    filter.color == Colors.white
+                        ? AppColors.accentPrimary
+                        : filter.color,
+                    filter.color == Colors.white
+                        ? AppColors.accentSecondary
+                        : filter.color.withOpacity(0.7),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
+          color: isSelected ? null : filter.color.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected
+                ? Colors.white.withOpacity(0.4)
+                : Colors.white.withOpacity(0.6),
+            width: 1.5,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color:
+                        (filter.color == Colors.white
+                                ? AppColors.accentPrimary
+                                : filter.color)
+                            .withOpacity(0.4),
+                    blurRadius: 12,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
+        ),
+        child: Text(
+          filter.label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TaskCard extends StatelessWidget {
+  const _TaskCard({
+    required this.task,
+    required this.assignee,
+    required this.onToggle,
+  });
+
+  final Task task;
+  final FamilyMember? assignee;
+  final ValueChanged<bool?> onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    final baseColor = assignee?.color ?? AppColors.accentPrimary;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                baseColor.withOpacity(0.35),
+                baseColor.withOpacity(0.1),
+                Colors.white.withOpacity(0.3),
+              ],
+              stops: const [0.0, 0.4, 1.0],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.5),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: baseColor.withOpacity(0.2),
+                blurRadius: 16,
+                spreadRadius: 0,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: CheckboxListTile(
+            controlAffinity: ListTileControlAffinity.leading,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 6,
+            ),
+            title: Text(
+              task.title,
+              style: TextStyle(
+                decoration: task.isDone ? TextDecoration.lineThrough : null,
+                color: task.isDone
+                    ? AppColors.textSecondary
+                    : AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+              ),
+            ),
+            subtitle: Row(
+              children: [
+                if (assignee != null) ...[
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: assignee!.color,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: assignee!.color.withOpacity(0.5),
+                          blurRadius: 4,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                ],
+                Text(
+                  assignee == null
+                      ? 'Unassigned'
+                      : '${assignee!.name} · ${assignee!.relation}',
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+            value: task.isDone,
+            onChanged: onToggle,
+            activeColor: AppColors.accentPrimary,
+            checkColor: Colors.white,
+            checkboxShape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -236,30 +352,61 @@ class _WheelButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: DecoratedBox(
+      child: Container(
         decoration: BoxDecoration(
-          gradient: AppColors.vibrantGradient,
-          borderRadius: BorderRadius.circular(26),
-          boxShadow: AppColors.softGlow,
+          gradient: AppColors.holographicGradient,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.glowPurple.withOpacity(0.4),
+              blurRadius: 20,
+              spreadRadius: 0,
+              offset: const Offset(0, 8),
+            ),
+            BoxShadow(
+              color: AppColors.glowCyan.withOpacity(0.3),
+              blurRadius: 30,
+              spreadRadius: -5,
+              offset: const Offset(0, 12),
+            ),
+          ],
         ),
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(26),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(Icons.casino, color: Colors.white),
-                SizedBox(width: 8),
-                Text(
-                  'Random assignee',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: BorderRadius.circular(28),
+            splashColor: Colors.white.withOpacity(0.2),
+            highlightColor: Colors.white.withOpacity(0.1),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.casino_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Random assignee',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      letterSpacing: -0.3,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

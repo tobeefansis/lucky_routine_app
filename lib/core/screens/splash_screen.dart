@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _initializeApp() async {
-    await SdkInitializer.initAll(context);
+    // await SdkInitializer.initAll(context);
     // await Future.delayed(const Duration(seconds: 1));
     if (!mounted) return;
     // Navigator.of(context).pushReplacement(

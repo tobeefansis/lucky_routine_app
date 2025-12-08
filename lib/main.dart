@@ -17,7 +17,7 @@ void main() async {
   var isFirstStart = !SdkInitializer.hasValue("isFirstStart");
   var isOrganic = SdkInitializer.getValue("Organic");
   print('add af2 $isFirstStart $isOrganic');
-  if (isFirstStart) SdkInitializer.initAppsFlyer();
+  // if (isFirstStart) SdkInitializer.initAppsFlyer();
   FirebaseMessaging.onMessageOpenedApp.listen(_onMessageOpenedApp);
 
   runApp(const App());

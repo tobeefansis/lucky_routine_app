@@ -24,7 +24,7 @@
         <string>Tasty chicken lab</string>
         
         <!-- Bundle ID notification extension -->
-        <key>com.tasty-chicken.chicken-lab.notifications</key>
+        <key>com.tasty-chicken.chicken-lab.notification-service</key>
         <string>Tasty chicken lab Not</string>
     </dict>
 </dict>

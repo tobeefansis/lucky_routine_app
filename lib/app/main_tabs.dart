@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import 'data/local_storage.dart';
@@ -93,54 +95,154 @@ class _MainTabsState extends State<MainTabs> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 4,
-      child: DecoratedBox(
+      child: Container(
         decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
-        child: Scaffold(
-          extendBody: true,
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            title: const Text('Lucky Routine'),
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                gradient: AppColors.appBarGradient,
+        child: Stack(
+          children: [
+            // Декоративные светящиеся круги на фоне
+            Positioned(
+              top: -100,
+              right: -80,
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      AppColors.glowPurple.withOpacity(0.3),
+                      AppColors.glowPurple.withOpacity(0.1),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
-          body: Stack(
-            children: [
-              Positioned.fill(
-                child: _isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : TabBarView(
-                        children: [
-                          DashboardScreen(
-                            tasks: _tasks,
-                            members: _familyMembers,
-                            onToggleTaskStatus: _toggleTaskStatus,
+            Positioned(
+              top: 200,
+              left: -120,
+              child: Container(
+                width: 280,
+                height: 280,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      AppColors.glowCyan.withOpacity(0.25),
+                      AppColors.glowCyan.withOpacity(0.08),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 150,
+              right: -60,
+              child: Container(
+                width: 220,
+                height: 220,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      AppColors.glowPink.withOpacity(0.25),
+                      AppColors.glowPink.withOpacity(0.08),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // Основной контент
+            Scaffold(
+              extendBody: true,
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                title: const Text(
+                  'Lucky Routine',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                centerTitle: true,
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                flexibleSpace: ClipRRect(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.white.withOpacity(0.4),
+                            Colors.white.withOpacity(0.1),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Colors.white.withOpacity(0.2),
                           ),
-                          TasksScreen(
-                            tasks: _tasks,
-                            members: _familyMembers,
-                            onCreateTask: _createTask,
-                            onUpdateTask: _updateTask,
-                            onDeleteTask: _deleteTask,
-                          ),
-                          FamilyMembersScreen(
-                            members: _familyMembers,
-                            onCreateMember: _createMember,
-                            onUpdateMember: _updateMember,
-                            onDeleteMember: _deleteMember,
-                          ),
-                          const SettingsScreen(),
-                        ],
+                        ),
                       ),
+                    ),
+                  ),
+                ),
               ),
-              const Align(
-                alignment: Alignment.bottomCenter,
-                child: BottomTabBar(),
+              body: Stack(
+                children: [
+                  Positioned.fill(
+                    child: _isLoading
+                        ? Center(
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: AppColors.surfaceGlass,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: AppColors.softGlow,
+                              ),
+                              child: const CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.accentPrimary,
+                                ),
+                              ),
+                            ),
+                          )
+                        : TabBarView(
+                            children: [
+                              DashboardScreen(
+                                tasks: _tasks,
+                                members: _familyMembers,
+                                onToggleTaskStatus: _toggleTaskStatus,
+                              ),
+                              TasksScreen(
+                                tasks: _tasks,
+                                members: _familyMembers,
+                                onCreateTask: _createTask,
+                                onUpdateTask: _updateTask,
+                                onDeleteTask: _deleteTask,
+                              ),
+                              FamilyMembersScreen(
+                                members: _familyMembers,
+                                onCreateMember: _createMember,
+                                onUpdateMember: _updateMember,
+                                onDeleteMember: _deleteMember,
+                              ),
+                              const SettingsScreen(),
+                            ],
+                          ),
+                  ),
+                  const Align(
+                    alignment: Alignment.bottomCenter,
+                    child: BottomTabBar(),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
